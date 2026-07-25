@@ -35,6 +35,12 @@ class Workout(db.Model) :
 
     workout_exercises = db.relationship('WorkoutExercise', back_populate='workout')
 
+    exercises = association_proxy(
+        'workout_exercises',
+        'exercise',
+        creator = lambda exercise_obj : WorkoutExercise(exercise=exercise_obj)
+    )
+
 
 class WorkoutExercise(db.Model):
     __tablename__ = 'WorkoutExercises'
