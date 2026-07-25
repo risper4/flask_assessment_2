@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
+from marshmallow import ValidationError
 
 metadata = MetaData()
 
@@ -23,8 +24,18 @@ class Exercise(db.Model) :
         'workout',
         creator = lambda workout_obj : WorkoutExercise(workout=workout_obj)
     )
-    
 
+    @validates ('category')
+    def validate_category(self, key, value)
+        category_list = ['cardio', 'pilates', 'weightlifting', 'bodyweight', 'balance', 'intense']
+
+        if value not in category_list:
+            raise ValidationError(f"Category selected must be one of these : {','.join(category_list)}")
+        return value
+
+
+
+    
 class Workout(db.Model) :
     __tablename__ = 'workouts'
 
@@ -44,6 +55,9 @@ class Workout(db.Model) :
     __table_args__ = (
         db.CheckConstraint('(15 <= duration_minutes <= 100)', )
     )
+
+
+
 
 
 class WorkoutExercise(db.Model):
