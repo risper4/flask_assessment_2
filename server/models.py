@@ -15,6 +15,8 @@ class Exercise(db.Model) :
     category = db.Column(db.String)
     equipment_needed = db.Column(db.Boolean)
 
+    workout_exercises = db.relationship('WorkoutExercise', back_populate='exercise')
+
 
 class Workout(db.Model) :
     __tablename__ = 'workouts'
@@ -25,7 +27,7 @@ class Workout(db.Model) :
     note = db.Column(db.String)
 
 
-class WorkoutExercises(db.Model):
+class WorkoutExercise(db.Model):
     __tablename__ = 'WorkoutExercises'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -34,3 +36,5 @@ class WorkoutExercises(db.Model):
     duration_seconds = db.Column(db.Integer)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'))
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
+
+    exercise = db.relationship('Exercise', back_populate='workout_exercises')
