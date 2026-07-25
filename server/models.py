@@ -27,7 +27,7 @@ class Exercise(db.Model) :
 
     @validates ('category')
     def validate_category(self, key, value) :
-        category_list = ['cardio', 'pilates', 'weightlifting', 'bodyweight', 'balance', 'intense']
+        category_list = ['cardio', 'flexibility', 'weightlifting', 'bodyweight', 'balance', 'intense']
 
         if value not in category_list:
             raise ValueError(f"Category selected must be one of these : {','.join(category_list)}")
@@ -42,7 +42,7 @@ class Workout(db.Model) :
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     duration_minutes = db.Column(db.Integer, nullable=False)
-    notes = db.Column(db.String, nullable=False)
+    notes = db.Column(db.String, nullable=True)
 
     workout_exercises = db.relationship('WorkoutExercise', back_populates='workout', cascade='all, delete-orphan')
 
@@ -53,7 +53,7 @@ class Workout(db.Model) :
     )
 
     __table_args__ = (
-        db.CheckConstraint('(15 <= duration_minutes <= 100)', )
+        db.CheckConstraint('(15 <= duration_minutes <= 100)'),
     )
 
     @validates('date')
@@ -79,5 +79,5 @@ class WorkoutExercise(db.Model):
     workout = db.relationship('Workout', back_populates='workout_exercises')
 
     __table_args__ = (
-        db.CheckConstraint ('(reps > sets) AND (reps >= 5)')
+        db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
     )
