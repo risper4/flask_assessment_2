@@ -19,6 +19,11 @@ class Exercise(db.Model) :
 class Workout(db.Model) :
     __tablename__ = 'workouts'
 
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    duration_minutes = db.Column(db.Integer)
+    note = db.Column(db.String)
+
 
 class WorkoutExercises(db.Model):
     __tablename__ = 'WorkoutExercises'
