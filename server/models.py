@@ -3,6 +3,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
 from marshmallow import ValidationError
+from datetime import date, datetime
 
 metadata = MetaData()
 
@@ -15,9 +16,9 @@ class Exercise(db.Model) :
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     category = db.Column(db.String, nullable=False)
-    equipment_needed = db.Column(db.Boolean, , nullable=False)
+    equipment_needed = db.Column(db.Boolean, nullable=False)
 
-    workout_exercises = db.relationship('WorkoutExercise', back_populate='exercise')
+    workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise', cascade='all, delete-orphan')
 
     workouts = association_proxy(
         'workout_exercises',
@@ -27,7 +28,7 @@ class Exercise(db.Model) :
 
     @validates ('category')
     def validate_category(self, key, value) :
-        category_list = ['cardio', 'pilates', 'weightlifting', 'bodyweight', 'balance', 'intense']
+        category_list = ['cardio', 'flexibility', 'weightlifting', 'bodyweight', 'balance', 'intense']
 
         if value not in category_list:
             raise ValueError(f"Category selected must be one of these : {','.join(category_list)}")
@@ -42,9 +43,9 @@ class Workout(db.Model) :
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     duration_minutes = db.Column(db.Integer, nullable=False)
-    notes = db.Column(db.String, nullable=False)
+    notes = db.Column(db.String, nullable=True)
 
-    workout_exercises = db.relationship('WorkoutExercise', back_populate='workout')
+    workout_exercises = db.relationship('WorkoutExercise', back_populates='workout', cascade='all, delete-orphan')
 
     exercises = association_proxy(
         'workout_exercises',
@@ -53,12 +54,15 @@ class Workout(db.Model) :
     )
 
     __table_args__ = (
-        db.CheckConstraint('(15 <= duration_minutes <= 100)', )
+        db.CheckConstraint('(15 <= duration_minutes <= 100)'),
     )
 
     @validates('date')
     def validate_date(self, key, value) :
-        if value < db.date.today() :
+        if isinstance(value, str):
+            value = datetime.strptime(value, '%d/%m/%Y').date()
+
+        if value < date.today() :
             raise ValueError('Date set cannot be in the past')
         return value
 
@@ -75,9 +79,9 @@ class WorkoutExercise(db.Model):
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
 
-    exercise = db.relationship('Exercise', back_populate='workout_exercises')
-    workout = db.relationship('Workout', back_populate='workout_exercises')
+    workout = db.relationship('Workout', back_populates='workout_exercises')
+    exercise = db.relationship('Exercise', back_populates='workout_exercises')
 
     __table_args__ = (
-        db.CheckConstraint ('(reps > sets) AND (reps >= 5)')
+        db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
     )
