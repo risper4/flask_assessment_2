@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
+from sqlalchemy.ext.associationproxy import association_proxy
 
 metadata = MetaData()
 
@@ -16,6 +17,12 @@ class Exercise(db.Model) :
     equipment_needed = db.Column(db.Boolean)
 
     workout_exercises = db.relationship('WorkoutExercise', back_populate='exercise')
+
+    workouts = association_proxy(
+        'workout_exercises',
+        'workout',
+        creator = lambda workout_obj : WorkoutExercise(workout=workout_obj)
+    )
     
 
 class Workout(db.Model) :
@@ -25,7 +32,7 @@ class Workout(db.Model) :
     date = db.Column(db.Date)
     duration_minutes = db.Column(db.Integer)
     note = db.Column(db.String)
-    
+
     workout_exercises = db.relationship('WorkoutExercise', back_populate='workout')
 
 
