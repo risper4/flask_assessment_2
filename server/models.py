@@ -75,8 +75,8 @@ class WorkoutExercise(db.Model):
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
 
-    exercise = db.relationship('Exercise', back_populates='workout_exercises')
     workout = db.relationship('Workout', back_populates='workout_exercises')
+    exercise = db.relationship('Exercise', back_populates='workout_exercises')
 
     __table_args__ = (
         db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
