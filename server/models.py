@@ -58,3 +58,7 @@ class WorkoutExercise(db.Model):
 
     exercise = db.relationship('Exercise', back_populate='workout_exercises')
     workout = db.relationship('Workout', back_populate='workout_exercises')
+
+    __table_args__ = (
+        db.CheckConstraint ('(reps > sets) AND (reps >= 5)')
+    )
