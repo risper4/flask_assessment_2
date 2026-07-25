@@ -21,10 +21,10 @@ with app.app_context():
 
     w1 = Workout(date='29/7/2026', duration_minutes=60, notes='Arrive early')
     w2 = Workout(date='1/8/2026', duration_minutes=45, notes='Register new members')
-    w3 = Workout(date='12/8/2026', duration_minutes=90)
+    w3 = Workout(date='12/8/2026', duration_minutes=90, notes='Sign brand deals')
     w4 = Workout(date='15/8/2026', duration_minutes=60, notes='Equipment checks')
     w5 = Workout(date='20/8/2026', duration_minutes=45, notes='Recieve new equipment delivery')
-    w6 = Workout(date='24/8/2026', duration_minutes=50)
+    w6 = Workout(date='24/8/2026', duration_minutes=50, notes='Attend trainers summit')
     db.session.add_all([w1, w2, w3, w4, w5, w6])
     db.session.commit()
 
