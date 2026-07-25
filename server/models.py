@@ -26,11 +26,11 @@ class Exercise(db.Model) :
     )
 
     @validates ('category')
-    def validate_category(self, key, value)
+    def validate_category(self, key, value) :
         category_list = ['cardio', 'pilates', 'weightlifting', 'bodyweight', 'balance', 'intense']
 
         if value not in category_list:
-            raise ValidationError(f"Category selected must be one of these : {','.join(category_list)}")
+            raise ValueError(f"Category selected must be one of these : {','.join(category_list)}")
         return value
 
 
@@ -56,6 +56,11 @@ class Workout(db.Model) :
         db.CheckConstraint('(15 <= duration_minutes <= 100)', )
     )
 
+    @validates('date')
+    def validate_date(self, key, value) :
+        if value < db.date.today() :
+            raise ValueError('Date set cannot be in the past')
+        return value
 
 
 
