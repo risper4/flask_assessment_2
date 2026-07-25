@@ -3,6 +3,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
 from marshmallow import ValidationError
+from datetime import date, datetime
 
 metadata = MetaData()
 
@@ -58,7 +59,10 @@ class Workout(db.Model) :
 
     @validates('date')
     def validate_date(self, key, value) :
-        if value < db.date.today() :
+        if isinstance(value, str):
+            value = datetime.strptime(value, '%d/%m/%Y').date()
+
+        if value < date.today() :
             raise ValueError('Date set cannot be in the past')
         return value
 
