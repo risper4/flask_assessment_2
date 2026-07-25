@@ -13,9 +13,9 @@ class Exercise(db.Model) :
     __tablename__ = 'exercises'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    category = db.Column(db.String)
-    equipment_needed = db.Column(db.Boolean)
+    name = db.Column(db.String, nullable=False)
+    category = db.Column(db.String, nullable=False)
+    equipment_needed = db.Column(db.Boolean, , nullable=False)
 
     workout_exercises = db.relationship('WorkoutExercise', back_populate='exercise')
 
@@ -40,9 +40,9 @@ class Workout(db.Model) :
     __tablename__ = 'workouts'
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
-    duration_minutes = db.Column(db.Integer)
-    notes = db.Column(db.String)
+    date = db.Column(db.Date, nullable=False)
+    duration_minutes = db.Column(db.Integer, nullable=False)
+    notes = db.Column(db.String, nullable=False)
 
     workout_exercises = db.relationship('WorkoutExercise', back_populate='workout')
 
@@ -69,11 +69,11 @@ class WorkoutExercise(db.Model):
     __tablename__ = 'WorkoutExercises'
 
     id = db.Column(db.Integer, primary_key=True)
-    reps = db.Column(db.Integer)
-    sets = db.Column(db.Integer)
-    duration_seconds = db.Column(db.Integer)
-    workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'))
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
+    reps = db.Column(db.Integer, nullable=False)
+    sets = db.Column(db.Integer, nullable=False)
+    duration_seconds = db.Column(db.Integer, nullable=False)
+    workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
 
     exercise = db.relationship('Exercise', back_populate='workout_exercises')
     workout = db.relationship('Workout', back_populate='workout_exercises')
