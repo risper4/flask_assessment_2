@@ -31,7 +31,7 @@ class Workout(db.Model) :
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     duration_minutes = db.Column(db.Integer)
-    note = db.Column(db.String)
+    notes = db.Column(db.String)
 
     workout_exercises = db.relationship('WorkoutExercise', back_populate='workout')
 
@@ -39,6 +39,10 @@ class Workout(db.Model) :
         'workout_exercises',
         'exercise',
         creator = lambda exercise_obj : WorkoutExercise(exercise=exercise_obj)
+    )
+
+    __table_args__ = (
+        db.CheckConstraint('(15 <= duration_minutes <= 100)', )
     )
 
 
