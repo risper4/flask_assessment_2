@@ -8,12 +8,17 @@ db = SQLAlchemy(metadata=metadata)
 
 
 class Exercise(db.Model) :
-    pass
+    __tablename__ = 'exercises'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    category = db.Column(db.String)
+    equipment_needed = db.Column(db.Boolean)
 
 
 class Workout(db.Model) :
-    pass
+    __tablename__ = 'workouts'
 
 
 class WorkoutExercises(db.Model):
-    pass
+    __tablename__ = 'WorkoutExercises'
