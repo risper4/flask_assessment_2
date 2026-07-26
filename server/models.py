@@ -74,6 +74,13 @@ class Workout(db.Model) :
         return value
 
 
+    class WorkoutSchema(Schema) :
+        id = fields.Integer(dump_only=True)
+        date = fields.Date(required=True)
+        duration_minutes = fields.Integer(required=True)
+        notes = fields.String(required=True)
+
+
 
 
 class WorkoutExercise(db.Model):
