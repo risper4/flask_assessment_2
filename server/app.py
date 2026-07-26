@@ -170,6 +170,42 @@ def delete_exercise(id) :
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
 
+
+
+@app.route('/workouts/<int:workout_id>/exercises/<int:exercise_id>/workout_exercises', methods=['POST'])
+def workout_exercise(workout_id, exercise_id) :
+    try : 
+        workout = Workout.query.filter_by(id=workout_id).first()
+        
+        if not workout :
+            return make_response({'error' : f'Workout {id} not found'})
+
+        exercise = Exercise.query.first_by(id=exercise_id).first()
+
+        if not exercise :
+            return make_response({'error' : f'Exercise {exercise_id} is not found in the workout chosen'})
+
+        data = request.get_json()
+
+        workout_exercise = WorkoutExercise(reps=data['reps'], sets=data['sets'], duration_seconds=data['duration_seconds'], workout=workout, exercise=exercise)
+
+        db.session.add(workout_exercise)
+        db.session.commit()
+
+        result = {
+            'reps' : workout_exercise.reps,
+            'sets' : workout_exercise.sets,
+            'duration_seconds' : workout_exercise.duration_seconds,
+            'workout' : workout_exercise.workout,
+            'exercise' : workout_exercise.exercise
+        }
+
+        return make_response(result, 200)
+
+    except ValidationError as err :
+        print('Invalid fields : ', err.messages)
+
+    
     
         
 
