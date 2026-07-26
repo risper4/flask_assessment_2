@@ -38,8 +38,9 @@ class Exercise(db.Model) :
     class ExerciseSchema(Schema) :
         id = fields.Int(dump_only=True)
         name = fields.String(required=True)
-        category=fields.String(required=True)
-        equipment_needed=fields.Boolean(required=True)
+        category = fields.String(required=True)
+        equipment_needed = fields.Boolean(required=True)
+        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
 
@@ -79,7 +80,7 @@ class Workout(db.Model) :
         date = fields.Date(required=True)
         duration_minutes = fields.Integer(required=True)
         notes = fields.String(required=True)
-        workout_exercises = fields.List(fields.Nested(exclude=('workout', 'exercise')))
+        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
 
@@ -101,12 +102,12 @@ class WorkoutExercise(db.Model):
         db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
     )
 
-    class WorkoutExercise(Schema) :
+    class WorkoutExerciseSchema(Schema) :
         id = fields.Integer(dump_only=True)
         reps = fields.Integer(required=True)
         sets = fields.Integer(required=True)
         duration_seconds = fields.Integer(required=True)
-        workout = fields.Nested(lambda : Workout(exclude=('workout_exercises',)))
-        exercise = fields.Nested(lambda : Exercise(exclude=('workout_exercises',)))
+        workout = fields.Nested(lambda : WorkoutSchema(exclude=('workout_exercises',)))
+        exercise = fields.Nested(lambda : ExerciseSchema(exclude=('workout_exercises',)))
 
 
