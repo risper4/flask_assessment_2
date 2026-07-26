@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import ValidationError
+from marshmallow import ValidationError, fields, validates, Schema
 from datetime import date, datetime
 
 metadata = MetaData()
@@ -33,6 +33,14 @@ class Exercise(db.Model) :
         if value not in category_list:
             raise ValueError(f"Category selected must be one of these : {','.join(category_list)}")
         return value
+
+
+    class ExerciseSchema(Schema) :
+        id = fields.Int(dump_only=True)
+        name = fields.String(required=True)
+        category = fields.String(required=True)
+        equipment_needed = fields.Boolean(required=True)
+        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
 
@@ -67,6 +75,14 @@ class Workout(db.Model) :
         return value
 
 
+    class WorkoutSchema(Schema) :
+        id = fields.Integer(dump_only=True)
+        date = fields.Date(required=True)
+        duration_minutes = fields.Integer(required=True)
+        notes = fields.String(required=True)
+        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+
+
 
 
 class WorkoutExercise(db.Model):
@@ -85,3 +101,13 @@ class WorkoutExercise(db.Model):
     __table_args__ = (
         db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
     )
+
+    class WorkoutExerciseSchema(Schema) :
+        id = fields.Integer(dump_only=True)
+        reps = fields.Integer(required=True)
+        sets = fields.Integer(required=True)
+        duration_seconds = fields.Integer(required=True)
+        workout = fields.Nested(lambda : WorkoutSchema(exclude=('workout_exercises',)))
+        exercise = fields.Nested(lambda : ExerciseSchema(exclude=('workout_exercises',)))
+
+
