@@ -87,8 +87,7 @@ def delete_workout(id) :
         workout = Workout.query.filter_all(id).first()
         
         if not workout :
-            body = {'error' : f'Workout {id} not found'}
-            status = 404
+            return make_response({'error' : f'Workout {id} not found'}, 404)
 
         else :
             db.session.delete(workout)
@@ -154,7 +153,24 @@ def add_exercise() :
         print('Invalid fields : ', err.messages)
 
 
-     
+
+
+@app.route('/exercises/<int:id>', method=['DELETE'])
+def delete_exercise(id) :
+    try :
+        exercise = Exercise.query.filter_by(id=id).first()
+
+        if not exercise :
+            return make_response({'error' : f'Exercise {id} not found'})
+
+        else :
+            db.session.delete(exercise)
+            db.session.commit()
+
+    except ValidationError as err :
+        print('Invalid fields : ', err.messages)
+
+    
         
 
 
