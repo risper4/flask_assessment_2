@@ -95,7 +95,25 @@ def delete_workout(id) :
             db.session.commit()
 
     except ValidationError as err :
-        print("Invalid field" ,err.message)
+        print("Invalid field", err.message)
+
+
+
+@app.route('/exercises', methods=['GET'])
+def get_exercises() :
+    try :
+        exercises = Exercise.query.all()
+        
+        body = [{'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed} for e in exercises]
+    
+        return make_response(body, 200)
+
+    except ValidationError as err :
+        print('Invalid field' ,err.message)
+
+
+
+@
 
         
 
