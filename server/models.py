@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import ValidationError
+from marshmallow import ValidationError, fields, validates, Schema
 from datetime import date, datetime
 
 metadata = MetaData()
@@ -33,6 +33,13 @@ class Exercise(db.Model) :
         if value not in category_list:
             raise ValueError(f"Category selected must be one of these : {','.join(category_list)}")
         return value
+
+
+    class ExerciseSchema(Schema) :
+        id = fields.Int(dump_only=True)
+        name = fields.String(required=True)
+        category=fields.String(required=True)
+        equipment_needed=fields.Boolean(required=True)
 
 
 
