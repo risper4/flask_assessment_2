@@ -105,5 +105,7 @@ class WorkoutExercise(db.Model):
         reps = fields.Integer(required=True)
         sets = fields.Integer(required=True)
         duration_seconds = fields.Integer(required=True)
+        workout = fields.Nested(lambda : Workout(exclude=('workout_exercises',)))
+        exercise = fields.Nested(lambda : Exercise(exclude=('workout_exercises',)))
 
-        
+
