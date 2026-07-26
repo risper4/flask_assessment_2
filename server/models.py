@@ -99,3 +99,11 @@ class WorkoutExercise(db.Model):
     __table_args__ = (
         db.CheckConstraint ('(reps > sets) AND (reps >= 5)'),
     )
+
+    class WorkoutExercise(Schema) :
+        id = fields.Integer(dump_only=True)
+        reps = fields.Integer(required=True)
+        sets = fields.Integer(required=True)
+        duration_seconds = fields.Integer(required=True)
+
+        
