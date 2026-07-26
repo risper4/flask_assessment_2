@@ -79,6 +79,7 @@ class Workout(db.Model) :
         date = fields.Date(required=True)
         duration_minutes = fields.Integer(required=True)
         notes = fields.String(required=True)
+        workout_exercises = fields.List(fields.Nested(exclude=('workout', 'exercise')))
 
 
 
