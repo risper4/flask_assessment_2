@@ -57,6 +57,23 @@ def get_specific_workout(id)  :
 
 
 
+@app.route('/workouts', methods=['POST'])
+def add_workouts() :
+    data = request.get_json()
+    workout = Workout(date = data['date'], duration_minutes = data['duration_minutes'], notes = data['notes'])
+
+    db.session.add(workout)
+    db.session.commit()
+
+    result = ({
+        'id' : workout.id, 
+        'date' : workout.date, 
+        'duration_minutes' : workout.duration_minutes, 
+        'notes' : workout.notes
+        }, 'has been added')
+
+    return make_response(result, 200)
+
 
 
 
