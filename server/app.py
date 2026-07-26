@@ -38,7 +38,7 @@ def get_specific_workout(id)  :
         workout = Workout.query.filter_by(id=id).first()
 
         if not  workout :
-            body = {f'error': 'Workout {id} not found'}
+            body = {'error': f'Workout {id} not found'}
             status = 404
         else :
             body = {
@@ -59,24 +59,43 @@ def get_specific_workout(id)  :
 
 @app.route('/workouts', methods=['POST'])
 def add_workouts() :
-    data = request.get_json()
-    workout = Workout(date = data['date'], duration_minutes = data['duration_minutes'], notes = data['notes'])
+    try :
+        data = request.get_json()
+        workout = Workout(date = data['date'], duration_minutes = data['duration_minutes'], notes = data['notes'])
+    
+        db.session.add(workout)
+        db.session.commit()
+    
+        result = ({
+            'id' : workout.id, 
+            'date' : workout.date, 
+            'duration_minutes' : workout.duration_minutes, 
+            'notes' : workout.notes
+            }, 'has been added')
+    
+        return make_response(result, 200)
 
-    db.session.add(workout)
-    db.session.commit()
-
-    result = ({
-        'id' : workout.id, 
-        'date' : workout.date, 
-        'duration_minutes' : workout.duration_minutes, 
-        'notes' : workout.notes
-        }, 'has been added')
-
-    return make_response(result, 200)
+    except ValidationError as err :
+        print('Invalid field : ', err.message)
+        print('Valid field : ', err.valid_data)
 
 
 
+@app.route('/workouts/<int:id>', methods=['DELETE'])
+def delete_workout(id) :
+    try :
+        workout = Workout.query.filter_all(id).first()
+        
+        if not workout :
+            body = {'error' : f'Workout {id} not found'}
+            status = 404
 
+        else :
+            db.session.delete(workout)
+            db.session.commit()
+
+    except ValidationError as err :
+        print("Invalid field" ,err.message)
 
         
 
