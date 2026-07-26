@@ -113,7 +113,23 @@ def get_exercises() :
 
 
 
-@
+@app.route('/exercises/<int:id>', methods=['GET'])
+def get_specific_id(id) :
+    try :
+        e = Exercise.query.filter_by(id=id).first()
+
+        if not exercise :
+            body = {'error' : f'Exercise {id} not found'}
+            status = 404
+
+        else :
+            body = {'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed}
+            status = 200
+
+        return make_response(body, status)
+
+    except ValidationError as err :
+        print('Invalid fields : ', err.messages)
 
         
 
