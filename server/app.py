@@ -71,7 +71,7 @@ def add_workouts() :
             'date' : workout.date, 
             'duration_minutes' : workout.duration_minutes, 
             'notes' : workout.notes
-            }, 'has been added')
+            })
     
         return make_response(result, 200)
 
@@ -118,7 +118,7 @@ def get_specific_id(id) :
     try :
         e = Exercise.query.filter_by(id=id).first()
 
-        if not exercise :
+        if not e :
             body = {'error' : f'Exercise {id} not found'}
             status = 404
 
@@ -131,6 +131,30 @@ def get_specific_id(id) :
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
 
+
+@app.route('/exercises', methods=['POST'])
+def add_exercise() :
+    try :
+        data = request.get_json()
+        new_exercise = Exercise(name = data['name'], category = data['category'], equipment_needed = data['equipment_needed'])
+
+        db.session.add(new_exercise)
+        db.session.commit()
+
+        result = {
+            'id' : new_exercise.id,
+            'name' : new_exercise.name,
+            'category' : new_exercise.category,
+            'equipment_needed' : new_exercise.equipment_needed
+        }
+
+        return make_response(result, 200)
+
+    except ValidationError as err :
+        print('Invalid fields : ', err.messages)
+
+
+     
         
 
 
