@@ -76,8 +76,10 @@ def add_workouts() :
             'duration_minutes' : workout.duration_minutes, 
             'notes' : workout.notes
             })
+
+        response_body = Workout.WorkoutSchema().dump(result)
     
-        return make_response(result, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid field : ', err.message)
