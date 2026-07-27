@@ -220,7 +220,9 @@ def workout_exercise(workout_id, exercise_id) :
             'exercise' : workout_exercise.exercise
         }
 
-        return make_response(result, 200)
+        response_body = WorkoutExercise.WorkoutExerciseSchema().dump(result)
+
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
