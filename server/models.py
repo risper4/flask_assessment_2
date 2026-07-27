@@ -43,6 +43,12 @@ class Exercise(db.Model) :
         workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
+    @validates_schema
+    def no_of_categories (self, data, **kwargs) :
+        if data.get('category') > 1 :
+            raise ValidationError('Only one category should be chosen')
+
+
 
     
 class Workout(db.Model) :
