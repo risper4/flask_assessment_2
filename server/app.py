@@ -51,7 +51,9 @@ def get_specific_workout(id)  :
                 }
             status = 200
 
-        return make_response(body, status)
+            response_body = Workout.WorkoutSchema().dump(body)
+
+        return make_response(response_body, status)
 
     except ValidationError as err :
         print('Valid fields : ', err.valid_data)
