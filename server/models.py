@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import ValidationError, fields, validates, Schema
+from marshmallow import ValidationError, fields, validates, Schema, validates_schema, post_load
 from datetime import date, datetime
 
 metadata = MetaData()
@@ -40,7 +40,13 @@ class Exercise(db.Model) :
         name = fields.String(required=True)
         category = fields.String(required=True)
         equipment_needed = fields.Boolean(required=True)
-        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+        workout_exercises = fields.List(fields.Nested(lambda : WorkoutExercise.WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+
+
+    @validates_schema
+    def no_of_categories (self, data, **kwargs) :
+        if data.get('category') > 1 :
+            raise ValidationError('Only one category should be chosen')
 
 
 
@@ -80,7 +86,7 @@ class Workout(db.Model) :
         date = fields.Date(required=True)
         duration_minutes = fields.Integer(required=True)
         notes = fields.String(required=True)
-        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+        workout_exercises = fields.List(fields.Nested(lambda : WorkoutExercise.WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
 
@@ -91,7 +97,7 @@ class WorkoutExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reps = db.Column(db.Integer, nullable=False)
     sets = db.Column(db.Integer, nullable=False)
-    duration_seconds = db.Column(db.Integer, nullable=False)
+    duration_seconds = db.Column(db.Integer)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
 
@@ -106,8 +112,14 @@ class WorkoutExercise(db.Model):
         id = fields.Integer(dump_only=True)
         reps = fields.Integer(required=True)
         sets = fields.Integer(required=True)
-        duration_seconds = fields.Integer(required=True)
-        workout = fields.Nested(lambda : WorkoutSchema(exclude=('workout_exercises',)))
-        exercise = fields.Nested(lambda : ExerciseSchema(exclude=('workout_exercises',)))
+        duration_seconds = fields.Integer()
+        workout = fields.Nested(lambda : Workout.WorkoutSchema(exclude=('workout_exercises',)))
+        exercise = fields.Nested(lambda : Exercise.ExerciseSchema(exclude=('workout_exercises',)))
+
+
+    @validates_schema
+    def check_sets_vs_duration_seconds(self, data, **kwargs):
+        if data.get('sets') == 0  and data.get('duration_seconds') :
+            raise ValidationError('There cannot be any duration seconds if there are no sets')
 
 

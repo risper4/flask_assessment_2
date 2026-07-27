@@ -23,8 +23,10 @@ def get_workouts() :
                     'duration_minutes' : workout.duration_minutes, 
                     'notes' : workout.notes}
                     for workout in workouts]
+
+        response_body = Workout.WorkoutSchema(many=True).dump(body)
     
-        return make_response(body, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Valid fields : ', err.valid_data)
@@ -49,7 +51,9 @@ def get_specific_workout(id)  :
                 }
             status = 200
 
-        return make_response(body, status)
+            response_body = Workout.WorkoutSchema().dump(body)
+
+        return make_response(response_body, status)
 
     except ValidationError as err :
         print('Valid fields : ', err.valid_data)
@@ -72,8 +76,10 @@ def add_workouts() :
             'duration_minutes' : workout.duration_minutes, 
             'notes' : workout.notes
             })
+
+        response_body = Workout.WorkoutSchema().dump(result)
     
-        return make_response(result, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid field : ', err.message)
@@ -103,9 +109,16 @@ def get_exercises() :
     try :
         exercises = Exercise.query.all()
         
-        body = [{'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed} for e in exercises]
+        body = [{
+            'id' : e.id, 
+            'name' : e.name, 
+            'category' :  e.category, 
+            'equipment_needed' : e.equipment_needed} 
+            for e in exercises]
+
+        response_body = Exercise.ExerciseSchema(many=True).dump(body)
     
-        return make_response(body, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid field' ,err.message)
@@ -122,10 +135,15 @@ def get_specific_id(id) :
             status = 404
 
         else :
-            body = {'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed}
+            body = {'id' : e.id, 
+                    'name' : e.name, 
+                    'category' :  e.category, 
+                    'equipment_needed' : e.equipment_needed}
             status = 200
 
-        return make_response(body, status)
+        response_body = Exercise.ExerciseSchema().dump(body)
+
+        return make_response(response_body, status)
 
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
@@ -147,7 +165,9 @@ def add_exercise() :
             'equipment_needed' : new_exercise.equipment_needed
         }
 
-        return make_response(result, 200)
+        response_body = Exercise.ExerciseSchema().dump(result)
+
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
@@ -155,7 +175,7 @@ def add_exercise() :
 
 
 
-@app.route('/exercises/<int:id>', method=['DELETE'])
+@app.route('/exercises/<int:id>', methods=['DELETE'])
 def delete_exercise(id) :
     try :
         exercise = Exercise.query.filter_by(id=id).first()
@@ -200,7 +220,9 @@ def workout_exercise(workout_id, exercise_id) :
             'exercise' : workout_exercise.exercise
         }
 
-        return make_response(result, 200)
+        response_body = WorkoutExercise.WorkoutExerciseSchema().dump(result)
+
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
