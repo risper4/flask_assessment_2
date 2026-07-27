@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import ValidationError, fields, validates, Schema
+from marshmallow import ValidationError, fields, validates, Schema, validates_schema
 from datetime import date, datetime
 
 metadata = MetaData()
@@ -91,7 +91,7 @@ class WorkoutExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reps = db.Column(db.Integer, nullable=False)
     sets = db.Column(db.Integer, nullable=False)
-    duration_seconds = db.Column(db.Integer, nullable=False)
+    duration_seconds = db.Column(db.Integer)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
 
@@ -106,8 +106,14 @@ class WorkoutExercise(db.Model):
         id = fields.Integer(dump_only=True)
         reps = fields.Integer(required=True)
         sets = fields.Integer(required=True)
-        duration_seconds = fields.Integer(required=True)
+        duration_seconds = fields.Integer()
         workout = fields.Nested(lambda : WorkoutSchema(exclude=('workout_exercises',)))
         exercise = fields.Nested(lambda : ExerciseSchema(exclude=('workout_exercises',)))
+
+
+    @validates_schema
+    def check_sets_vs_duration_seconds(self, data, **kwargs):
+        if data.get('sets') == 0  and data.get('duration_seconds') :
+            raise ValidationError('There cannot be any duration seconds if there are no sets')
 
 
