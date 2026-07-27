@@ -24,7 +24,7 @@ def get_workouts() :
                     'notes' : workout.notes}
                     for workout in workouts]
 
-        response_body = Workout.WorkoutSchema().dump(body)
+        response_body = Workout.WorkoutSchema(many=True).dump(body)
     
         return make_response(response_body, 200)
 
@@ -116,7 +116,7 @@ def get_exercises() :
             'equipment_needed' : e.equipment_needed} 
             for e in exercises]
 
-        response_body = Exercise.ExerciseSchema().dump(body)
+        response_body = Exercise.ExerciseSchema(many=True).dump(body)
     
         return make_response(response_body, 200)
 
@@ -175,7 +175,7 @@ def add_exercise() :
 
 
 
-@app.route('/exercises/<int:id>', method=['DELETE'])
+@app.route('/exercises/<int:id>', methods=['DELETE'])
 def delete_exercise(id) :
     try :
         exercise = Exercise.query.filter_by(id=id).first()
