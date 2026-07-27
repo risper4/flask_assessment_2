@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy.ext.associationproxy import association_proxy
-from marshmallow import ValidationError, fields, validates, Schema, validates_schema
+from marshmallow import ValidationError, fields, validates, Schema, validates_schema, post_load
 from datetime import date, datetime
 
 metadata = MetaData()
@@ -40,7 +40,7 @@ class Exercise(db.Model) :
         name = fields.String(required=True)
         category = fields.String(required=True)
         equipment_needed = fields.Boolean(required=True)
-        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+        workout_exercises = fields.List(fields.Nested(lambda : WorkoutExercise.WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
     @validates_schema
@@ -86,7 +86,7 @@ class Workout(db.Model) :
         date = fields.Date(required=True)
         duration_minutes = fields.Integer(required=True)
         notes = fields.String(required=True)
-        workout_exercises = fields.List(fields.Nested(WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
+        workout_exercises = fields.List(fields.Nested(lambda : WorkoutExercise.WorkoutExerciseSchema(exclude=('workout', 'exercise'))))
 
 
 
@@ -113,8 +113,8 @@ class WorkoutExercise(db.Model):
         reps = fields.Integer(required=True)
         sets = fields.Integer(required=True)
         duration_seconds = fields.Integer()
-        workout = fields.Nested(lambda : WorkoutSchema(exclude=('workout_exercises',)))
-        exercise = fields.Nested(lambda : ExerciseSchema(exclude=('workout_exercises',)))
+        workout = fields.Nested(lambda : Workout.WorkoutSchema(exclude=('workout_exercises',)))
+        exercise = fields.Nested(lambda : Exercise.ExerciseSchema(exclude=('workout_exercises',)))
 
 
     @validates_schema

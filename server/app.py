@@ -23,8 +23,10 @@ def get_workouts() :
                     'duration_minutes' : workout.duration_minutes, 
                     'notes' : workout.notes}
                     for workout in workouts]
+
+        response_body = Workout.WorkoutSchema().dump(body)
     
-        return make_response(body, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Valid fields : ', err.valid_data)
