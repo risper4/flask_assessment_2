@@ -109,9 +109,16 @@ def get_exercises() :
     try :
         exercises = Exercise.query.all()
         
-        body = [{'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed} for e in exercises]
+        body = [{
+            'id' : e.id, 
+            'name' : e.name, 
+            'category' :  e.category, 
+            'equipment_needed' : e.equipment_needed} 
+            for e in exercises]
+
+        response_body = Exercise.ExerciseSchema().dump(body)
     
-        return make_response(body, 200)
+        return make_response(response_body, 200)
 
     except ValidationError as err :
         print('Invalid field' ,err.message)
