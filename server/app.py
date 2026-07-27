@@ -135,10 +135,15 @@ def get_specific_id(id) :
             status = 404
 
         else :
-            body = {'id' : e.id, 'name' : e.name, 'category' :  e.category, 'equipment_needed' : e.equipment_needed}
+            body = {'id' : e.id, 
+                    'name' : e.name, 
+                    'category' :  e.category, 
+                    'equipment_needed' : e.equipment_needed}
             status = 200
 
-        return make_response(body, status)
+        response_body = Exercise.ExerciseSchema().dump(body)
+
+        return make_response(response_body, status)
 
     except ValidationError as err :
         print('Invalid fields : ', err.messages)
